@@ -1,0 +1,7 @@
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\bin\Debug\Projekt Spiel in der Konsole.exe.config
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\bin\Debug\Projekt Spiel in der Konsole.exe
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\bin\Debug\Projekt Spiel in der Konsole.pdb
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\obj\Debug\Projekt Spiel in der Konsole.csproj.AssemblyReference.cache
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\obj\Debug\Projekt Spiel in der Konsole.csproj.CoreCompileInputs.cache
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\obj\Debug\Projekt Spiel in der Konsole.exe
+C:\Users\julia\OneDrive\Documents\Softwareentwicklung\Visual Studio Projekte\Projekt Spiel in der Konsole\Projekt Spiel in der Konsole\obj\Debug\Projekt Spiel in der Konsole.pdb
