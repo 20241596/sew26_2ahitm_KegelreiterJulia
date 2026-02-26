@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\julia\\OneDrive\\Documents\\Softwareentwicklung\\sew26_2ahitm_KegelreiterJulia\\Projekt Spiel in der Konsole\\Projekt Spiel in der Konsole.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\julia\\OneDrive\\Documents\\Softwareentwicklung\\sew26_2ahitm_KegelreiterJulia\\Projekt Spiel in der Konsole\\Projekt Spiel in der Konsole.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\julia\\OneDrive\\Documents\\Softwareentwicklung\\sew26_2ahitm_KegelreiterJulia\\Projekt Spiel in der Konsole\\Projekt Spiel in der Konsole.csproj",
+        "projectName": "Projekt Spiel in der Konsole",
+        "projectPath": "C:\\Users\\julia\\OneDrive\\Documents\\Softwareentwicklung\\sew26_2ahitm_KegelreiterJulia\\Projekt Spiel in der Konsole\\Projekt Spiel in der Konsole.csproj",
+        "packagesPath": "C:\\Users\\julia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\julia\\OneDrive\\Documents\\Softwareentwicklung\\sew26_2ahitm_KegelreiterJulia\\Projekt Spiel in der Konsole\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "UsingMicrosoftNETSdk": false,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\julia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.12, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-arm64": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

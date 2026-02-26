@@ -1,10 +1,17 @@
-﻿/// Code für Consolensteuerung
+﻿
+using Microsoft.Win32;
+/// Code für Consolensteuerung
 using System;
-
 using System.Threading;
+
+using System.IO;
+
+
 
 namespace ConsolenSteuerung
 {
+
+
     internal class Program
     {
         static bool running = true;
@@ -12,6 +19,24 @@ namespace ConsolenSteuerung
         static ConsoleKey key;
 
         static string[,] spielBrett;
+
+
+
+        static string LadeDatei()
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Textdateien|*.txt|Alle Dateien|*.*";
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                return File.ReadAllText(dialog.FileName);
+            }
+
+            return null;
+        }
+
 
         static void Eingabe()
         {
@@ -25,6 +50,7 @@ namespace ConsolenSteuerung
 
         }
 
+        [STAThread]
         static void Main(string[] args)
         {
             spielBrett = new string[100, 100];
@@ -32,7 +58,7 @@ namespace ConsolenSteuerung
             const int MAX_X = 70;
             const int MAX_Y = 40;
 
-           // StartScreen();
+            StartScreen();
 
             MenuAusgabe();
 
@@ -414,7 +440,7 @@ namespace ConsolenSteuerung
 
 
                             case 2:
-                                
+
                                 Start();
                                 break;
 
@@ -426,7 +452,7 @@ namespace ConsolenSteuerung
 
                 }
 
-               
+
 
             }
 
@@ -456,7 +482,7 @@ namespace ConsolenSteuerung
             {
                 for (int j = 0; j < spielBrett.GetLength(1); j++)
                 {
-                    if (spielBrett[i,j] == gesucht)
+                    if (spielBrett[i, j] == gesucht)
                     {
                         yKoorMaxl = i;
                         xKoorMaxl = j;
@@ -467,7 +493,7 @@ namespace ConsolenSteuerung
                 }
 
             }
-            throw new Exception("Maxl nicht gefunden");
+
             return xKoorMaxl;
         }
 
@@ -478,31 +504,139 @@ namespace ConsolenSteuerung
 
             for (int i = 0; i < 15; i++)
             {
-                Console.SetCursorPosition(40, counter);
+                Console.SetCursorPosition(39, counter);
                 spielBrett[0, i] = "Wand";
                 Console.WriteLine('#');
                 counter++;
             }
-          
-                
-                    Console.SetCursorPosition(Console.WindowWidth / 2 - 1, Console.WindowHeight / 2 - 1 );
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write("L");
-                
+
+            for (int i = 0; i < 15; i++)
+            {
+                Console.SetCursorPosition(39, counter);
+                spielBrett[i, 0] = "Wand";
+                Console.WriteLine('#');
+                counter++;
             }
-        
+
+
+            Console.SetCursorPosition(Console.WindowWidth / 2 - 1, Console.WindowHeight / 2 - 1);
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            spielBrett[Console.WindowWidth / 2 - 1, Console.WindowHeight / 2 - 1] = "Maxl";
+
+            Console.Write("L");
+
+            Console.ForegroundColor = ConsoleColor.White;
+
+            for (int i = 0; i < 15; i++)
+            {
+                Console.SetCursorPosition(counter, 40);
+                spielBrett[0, i] = "Wand";
+                Console.WriteLine('#');
+                counter++;
+            }
+
+
+        }
+
+
+
 
         private static void Start()
         {
+            string level = "nothing";
+            int aktiveZeile = 0;
+            string[] zeilen = { "Level 1", "Level 2", "Level 3" };
+            Console.Clear();
+            Console.SetCursorPosition(10, 0);
+
+
+
+            while (key != ConsoleKey.E)
+            {
+                for (int i = 0; i < zeilen.Length; i++)
+                {
+                    if (i == aktiveZeile)
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
+                    Console.SetCursorPosition(10, 4 + i);
+                    Console.WriteLine(zeilen[i]);
+                }
+                key = Console.ReadKey(true).Key;
+
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                        aktiveZeile--;
+                        if (aktiveZeile < 0)
+                        {
+                            aktiveZeile += zeilen.Length;
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        aktiveZeile++;
+                        aktiveZeile %= zeilen.Length;
+                        break;
+
+                    case ConsoleKey.Enter:
+                        switch (aktiveZeile)
+                        {
+                            case 0:
+                                level = "Level1";
+                                break;
+
+                            case 1:
+                                level = "Level2";
+                                break;
+
+                            case 2:
+                                level = "Level3";
+                                break;
+
+
+                        }
+                        break;
+
+
+
+                }
+
+
+
+            }
+
+            int maxWidth = 0;
+            int maxLength = 0;
+            var sr = new StreamReader(level);
+            char[,] zeichen = new char[40,40];
+            string zeile;
+
+            for (int i = 0; !sr.EndOfStream; i++)
+            {
+                zeile = sr.ReadLine();
+                
+                for(int j = 0; j < zeile.Length; j++)
+                {
+                    zeichen[j, i] = zeile[j];
+                }
+
+                Console.WriteLine(zeile);
+            }
+
+
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Clear();
 
 
-           
 
 
-           
+
+
 
             Console.ForegroundColor = ConsoleColor.White;
 
@@ -519,73 +653,73 @@ namespace ConsolenSteuerung
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
-                        if (spielBrett[xKoorMaxl,yKoorMaxl - 1] == "Leer")
+                        if (spielBrett[xKoorMaxl, yKoorMaxl - 1] == "Leer")
                         {
-                            spielBrett[xKoorMaxl,yKoorMaxl - 1] = "Maxl";
-                            spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                            spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
+                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                         }
-                        else if (spielBrett[xKoorMaxl,yKoorMaxl - 1] == "Box")
+                        else if (spielBrett[xKoorMaxl, yKoorMaxl - 1] == "Box")
                         {
-                            if (spielBrett[xKoorMaxl,yKoorMaxl - 2] == "Leer")
+                            if (spielBrett[xKoorMaxl, yKoorMaxl - 2] == "Leer")
                             {
-                                spielBrett[xKoorMaxl,yKoorMaxl - 1] = "Maxl";
-                                spielBrett[xKoorMaxl,yKoorMaxl - 2] = "Box";
-                                spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                                spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
+                                spielBrett[xKoorMaxl, yKoorMaxl - 2] = "Box";
+                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                             }
-                            else if (spielBrett[xKoorMaxl,yKoorMaxl - 2] == "Ziel")
+                            else if (spielBrett[xKoorMaxl, yKoorMaxl - 2] == "Ziel")
                             {
-                                spielBrett[xKoorMaxl,yKoorMaxl - 1] = "Maxl";
-                                spielBrett[xKoorMaxl,yKoorMaxl - 2] = "BoxImZiel";
+                                spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
+                                spielBrett[xKoorMaxl, yKoorMaxl - 2] = "BoxImZiel";
                             }
                         }
                         break;
 
                     case ConsoleKey.DownArrow:
-                        if (spielBrett[xKoorMaxl,yKoorMaxl + 1] == "Leer")
+                        if (spielBrett[xKoorMaxl, yKoorMaxl + 1] == "Leer")
                         {
-                            spielBrett[xKoorMaxl,yKoorMaxl + 1] = "Maxl";
-                            spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                            spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
+                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                         }
-                        else if (spielBrett[xKoorMaxl,yKoorMaxl + 1] == "Box")
+                        else if (spielBrett[xKoorMaxl, yKoorMaxl + 1] == "Box")
                         {
-                            if (spielBrett[xKoorMaxl,yKoorMaxl + 2] == "Leer")
+                            if (spielBrett[xKoorMaxl, yKoorMaxl + 2] == "Leer")
                             {
-                                spielBrett[xKoorMaxl,yKoorMaxl + 1] = "Maxl";
-                                spielBrett[xKoorMaxl,yKoorMaxl + 2] = "Box";
-                                spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                                spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
+                                spielBrett[xKoorMaxl, yKoorMaxl + 2] = "Box";
+                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                             }
-                            else if (spielBrett[xKoorMaxl,yKoorMaxl + 2] == "Ziel")
+                            else if (spielBrett[xKoorMaxl, yKoorMaxl + 2] == "Ziel")
                             {
-                                spielBrett[xKoorMaxl,yKoorMaxl + 1] = "Maxl";
-                                spielBrett[xKoorMaxl,yKoorMaxl + 2] = "BoxImZiel";
+                                spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
+                                spielBrett[xKoorMaxl, yKoorMaxl + 2] = "BoxImZiel";
                             }
                         }
                         break;
 
                     case ConsoleKey.LeftArrow:
-                        if (spielBrett[xKoorMaxl - 1,yKoorMaxl] == "Leer")
+                        if (spielBrett[xKoorMaxl - 1, yKoorMaxl] == "Leer")
                         {
-                            spielBrett[xKoorMaxl - 1,yKoorMaxl] = "Maxl";
-                            spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                            spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
+                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                         }
-                        else if (spielBrett[xKoorMaxl - 1,yKoorMaxl] == "Box")
+                        else if (spielBrett[xKoorMaxl - 1, yKoorMaxl] == "Box")
                         {
-                            if (spielBrett[xKoorMaxl - 2,yKoorMaxl] == "Leer")
+                            if (spielBrett[xKoorMaxl - 2, yKoorMaxl] == "Leer")
                             {
-                                spielBrett[xKoorMaxl - 1,yKoorMaxl] = "Maxl";
-                                spielBrett[xKoorMaxl - 2,yKoorMaxl] = "Box";
-                                spielBrett[xKoorMaxl,yKoorMaxl] = "Leer";
+                                spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
+                                spielBrett[xKoorMaxl - 2, yKoorMaxl] = "Box";
+                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
 
                             }
-                            else if (spielBrett[xKoorMaxl - 2,yKoorMaxl] == "Ziel")
+                            else if (spielBrett[xKoorMaxl - 2, yKoorMaxl] == "Ziel")
                             {
-                                spielBrett[xKoorMaxl - 1,yKoorMaxl] = "Maxl";
-                                spielBrett[xKoorMaxl - 2,yKoorMaxl] = "BoxImZiel";
+                                spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
+                                spielBrett[xKoorMaxl - 2, yKoorMaxl] = "BoxImZiel";
                             }
                         }
                         break;
