@@ -1,8 +1,4 @@
 Julia: 11
-Julia: 11
-Julia: 11
-Julia: 10
 Mergona: 11
-: 12
 Amy: 11
-hh: 11
+
