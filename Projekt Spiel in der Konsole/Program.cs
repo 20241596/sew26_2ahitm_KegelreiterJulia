@@ -2,9 +2,13 @@
 using Microsoft.Win32;
 /// Code für Consolensteuerung
 using System;
-using System.Threading;
-
 using System.IO;
+using System.Threading;
+using System.Drawing;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+
 
 
 
@@ -14,29 +18,17 @@ namespace ConsolenSteuerung
 
     internal class Program
     {
+
+        static string[,] gameBoard = new string[30, 30];
+        static bool[,] goalList = new bool[30, 30];
         static bool running = true;
         static ConsoleKeyInfo inputkey;
         static ConsoleKey key;
-
-        static string[,] spielBrett;
-
-
-
-        static string LadeDatei()
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Textdateien|*.txt|Alle Dateien|*.*";
-
-            bool? result = dialog.ShowDialog();
-
-            if (result == true)
-            {
-                return File.ReadAllText(dialog.FileName);
-            }
-
-            return null;
-        }
-
+        static int xKoorMaxl, yKoorMaxl;
+        static int countGoals;
+        static string playerName = "";
+        static int footSteps = 0;
+        static StreamWriter sw = null;
 
         static void Eingabe()
         {
@@ -49,683 +41,603 @@ namespace ConsolenSteuerung
             }
 
         }
+        
 
         [STAThread]
         static void Main(string[] args)
         {
-            spielBrett = new string[100, 100];
 
-            const int MAX_X = 70;
-            const int MAX_Y = 40;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.CursorVisible = false;
+
+
+            const int MAX_X = 200;
+            const int MAX_Y = 100;
 
             StartScreen();
 
-            MenuAusgabe();
+            ShowMenu();
 
-            // parallele Methode zum Einlesen des Tastendrucks
             var myThread = new System.Threading.Thread(Eingabe);
             myThread.Start();
 
-            Console.SetWindowSize(MAX_X, MAX_Y);    // Konsolen Größe 
+
+            Console.SetWindowSize(MAX_X, MAX_Y);
+          
             Console.Title = "Konsolensteuerung von Julia Kegelreiter";
 
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Konsole - 2AHITM - Kegelreiter Julia");
-            Console.BackgroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("Bunt ist cool!");
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-
-            System.Threading.Thread.Sleep(1000);
-            Console.Clear();
-
-
+        }
+        static void KreuzAusgabe(string ausgabe, int xKoor, int yKoor)
+        {
+            Console.SetCursorPosition(xKoor, yKoor);
+            Console.WriteLine(ausgabe);
+            Thread.Sleep(25);
 
         }
-
-
-
-
         private static void StartScreen()
         {
-            int runx = 0;
 
-            Console.SetCursorPosition(5, 4);
-
-            while (runx < 95)
-            {
-                Console.Write('#');                     //Zeile 1
-                Thread.Sleep(5);
-                runx++;
-
+            Bitmap bmp = new Bitmap("Startscreen1.bmp"); 
+            for (int y = 0; y < bmp.Height; y++) 
+            { 
+                for (int x = 0; x < bmp.Width; x++) 
+                { 
+                    Color c = bmp.GetPixel(x, y); 
+                    Console.Write($"\x1b[48;2;{c.R};{c.G};{c.B}m "); 
+                } 
+                if (y != bmp.Height-1)
+                    Console.Write("\x1b[0m\n"); 
             }
-
-
-
-
-
-            KreuzAusgabe("#", 5, 5);
-
-            BoxAusgabe(6, 5);
-
-            KreuzAusgabe("#", 8, 5);
-
-            Console.SetCursorPosition(10, 5);
-            Console.ForegroundColor = ConsoleColor.Red;                             //Zeile 2
-            Console.WriteLine('O');
-            Thread.Sleep(25);
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("#", 50, 5);
-
-            KreuzAusgabe("#", 30, 5);
-            KreuzAusgabe("#", 99, 5);
-
-
-            Console.SetCursorPosition(5, 5);
-            for (int i = 5; i < 21; i++)
-            {
-                Console.WriteLine("#");
-
-                Console.SetCursorPosition(5, i);
-                Thread.Sleep(5);
-
-            }
-
-
-
-            Console.SetCursorPosition(99, 5);
-            for (int i = 5; i < 21; i++)
-            {
-                Console.WriteLine("#");
-
-                Console.SetCursorPosition(99, i);
-                Thread.Sleep(5);
-
-            }
-
-
-
-            KreuzAusgabe("#", 5, 6);
-
-            KreuzAusgabe("#", 8, 6);
-
-            Console.SetCursorPosition(10, 6);
-            Console.ForegroundColor = ConsoleColor.Red;                             //Zeile 3
-            Console.Write('O');
-            Thread.Sleep(25);
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("#", 50, 6);
-
-            KreuzAusgabe("#", 30, 6);
-
-            KreuzAusgabe("#", 99, 6);
-
-            KreuzAusgabe("#", 5, 7);
-
-            KreuzAusgabe("#", 8, 7);
-
-
-
-
-
-
-
-            BoxAusgabe(9, 7);
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("#", 30, 7);
-            //Zeile 4
-            KreuzAusgabe("## #####", 33, 7);
-
-            BoxAusgabe(48, 7);
-
-            KreuzAusgabe("#", 50, 7);
-
-            KreuzAusgabe("###########", 66, 7);
-
-            KreuzAusgabe("#", 99, 7);
-
-
-
-
-
-
-            KreuzAusgabe("#", 5, 8);
-
-            KreuzAusgabe("#", 8, 8);
-
-            KreuzAusgabe("#", 30, 8);                                //Zeile 5
-
-            KreuzAusgabe("## ######", 33, 8);
-
-            KreuzAusgabe("#", 50, 8);
-
-            KreuzAusgabe("######", 68, 8);
-
-            KreuzAusgabe("#", 99, 8);
-
-
-
-
-
-
-            Console.SetCursorPosition(10, 12);
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-
-            KreuzAusgabe(" ____                                                   ", 20, 9);
-            KreuzAusgabe(" | __ )  _____  _____ _ __                              ", 20, 10);
-            KreuzAusgabe(" |  _ \\ / _ \\ \\/ / _ \\ '_ \\                             ", 20, 11);
-            KreuzAusgabe(" | |_) | (_) >  <  __/ | | |                            ", 20, 12);
-            KreuzAusgabe(" |____/ \\___/_/\\_\\___|_| |_|    _      _                ", 20, 13);
-            KreuzAusgabe(" __   _____ _ __ ___  ___| |__ (_) ___| |__   ___ _ __  ", 20, 14);
-            KreuzAusgabe(" \\ \\ / / _ \\ '__/ __|/ __| '_ \\| |/ _ \\ '_ \\ / _ \\ '_ \\", 20, 15);
-            KreuzAusgabe("  \\ V /  __/ |  \\__ \\ (__| | | | |  __/ |_) |  __/ | | |", 20, 16);
-            KreuzAusgabe("   \\_/ \\___|_|  |___/\\___|_| |_|_|\\___|_.__/ \\___|_| |_|", 20, 17);
-
-
-
-
-
-            //Anschrift
-            Thread.Sleep(25);
-            Console.ForegroundColor = ConsoleColor.White;
-
-            int runy = 9;
-            do
-            {
-                Console.SetCursorPosition(5, runy);
-                Console.WriteLine('#');
-                Console.SetCursorPosition(99, runy);
-                Console.WriteLine("#");
-                runy++;
-            } while (runy < 16);
-
-
-
-
-
-
-
-            KreuzAusgabe("#", 5, 19);
-
-            KreuzAusgabe("#", 8, 19);
-
-            KreuzAusgabe("#", 30, 19);                                     //Zeile 18
-
-            KreuzAusgabe("## ########", 33, 19);
-
-            KreuzAusgabe("##############", 40, 19);
-
-            Console.SetCursorPosition(52, 19);
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write('O');
-            Thread.Sleep(25);
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("######", 68, 19);
-
-            KreuzAusgabe("#", 99, 19);
-
-
-
-
-            Console.SetCursorPosition(78, 19);
-
-            runx = 0;
-            for (int straight = 5; straight < 15; straight++)
-            {
-                Console.Write('#');
-                Thread.Sleep(10);                                               //mix Strecke nach unten
-                runx++;
-                Console.SetCursorPosition(78, straight);
-
-
-            }
-
-
-
-
-            KreuzAusgabe("#", 5, 20);
-
-            KreuzAusgabe("#", 8, 20);
-
-            KreuzAusgabe("#", 20, 20);                                 //Zeile 15
-
-            KreuzAusgabe("## ## # ###", 30, 20);
-
-            Console.SetCursorPosition(43, 20);
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write('O');
-            Thread.Sleep(25);
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("##########", 50, 20);
-
-            KreuzAusgabe("######", 68, 20);
-
-            Console.SetCursorPosition(10, 20);
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write('O');
-            Thread.Sleep(25);
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("#", 99, 20);
-
-
-
-
-            KreuzAusgabe("#", 5, 21);
-
-
-            BoxAusgabe(6, 21);
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            KreuzAusgabe("#", 30, 21);
-            //Zeile 4
-            KreuzAusgabe("## ######", 33, 21);                                         //Zeile 16
-
-            BoxAusgabe(42, 21);
-
-            KreuzAusgabe("#", 50, 21);
-
-            KreuzAusgabe("########", 66, 21);
-
-            KreuzAusgabe("### #########", 78, 21);
-
-            KreuzAusgabe("#", 99, 21);
-
-            Console.SetCursorPosition(5, 22);
-
-
-
-            runx = 0;
-            while (runx < 95)
-            {                                                                   //Zeile 17
-                Console.Write('#');
-                Thread.Sleep(5);
-                runx++;
-
-            }
-
-            Console.SetCursorPosition(5, 25);
-
-            Console.Write("Press ENTER to continue...");
-
-            Console.ReadKey(true);
-            //Wartezeit
-
+         
+               
+          
+            Thread.Sleep(3000);
+            Console.BackgroundColor = ConsoleColor.Black;
+            ShowMenu();
+            
+              
+           
+          
+               
+            
+
+            
+
+            
+           
+        }
+
+        static void ShowMenu()
+        {
+            int activeRow = 0;
+            string[] lines = { "Anleitung", "Bestenliste", "Start" };
             Console.Clear();
 
-        }
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-        static int KreuzAusgabe(string ausgabe, int xKoor, int yKoor)
-        {
-            Console.SetCursorPosition(xKoor, yKoor);
-            Console.Write(ausgabe);
-            Thread.Sleep(25);
-            return 0;
-        }
+            KreuzAusgabe("███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗", 0, 0);
+            KreuzAusgabe("████╗░████║██╔════╝████╗░██║██║░░░██║", 0, 1);
+            KreuzAusgabe("██╔████╔██║█████╗░░██╔██╗██║██║░░░██║", 0, 2);
+            KreuzAusgabe("██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║", 0, 3);
+            KreuzAusgabe("██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝", 0, 4);
+            KreuzAusgabe("╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░", 0, 5);
 
-        static int BoxAusgabe(int xKoor, int yKoor)
-        {
-            Console.SetCursorPosition(xKoor, yKoor);
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write("■");
-            Thread.Sleep(25);
-            Console.ForegroundColor = ConsoleColor.White;
-            return 0;
-        }
 
-        private static void MenuAusgabe()
-        {
-            int aktiveZeile = 0;
-            string[] zeilen = { "Spielerklärung", "Bestenliste", "Start" };
-            Console.Clear();
-            Console.SetCursorPosition(10, 0);
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.SetCursorPosition(0, 7);
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Menü (Abbruch mit 'e')");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Um sich im Menü nach oben zu bewegen, drücken Sie die Taste w");
-            Console.WriteLine("Um sich im Menü nach unten zu bewegen drücken Sie die Taste s");
+            Console.WriteLine("Menü (Abbruch mit 'Esc')");
+            Console.WriteLine("Um sich im Menü nach oben zu bewegen,drücken Sie die Pfeiltaste nach oben");
+            Console.WriteLine("Um sich im Menü nach unten zu bewegen,drücken Sie  die Pfeiltaste nach unten");
 
             Console.WriteLine();
-
-
-            while (key != ConsoleKey.E)
+            Console.SetCursorPosition(12, 0);
+            while (true)
             {
-                for (int i = 0; i < zeilen.Length; i++)
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    if (i == aktiveZeile)
+                    if (i == activeRow)
                     {
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
                     }
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
-                    Console.SetCursorPosition(10, 4 + i);
-                    Console.WriteLine(zeilen[i]);
+                    Console.SetCursorPosition(12, 11 + i);
+                    Console.WriteLine(lines[i]);
                 }
                 key = Console.ReadKey(true).Key;
 
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
-                        aktiveZeile--;
-                        if (aktiveZeile < 0)
+                        activeRow--;
+                        if (activeRow < 0)
                         {
-                            aktiveZeile += zeilen.Length;
+                            activeRow += lines.Length;
                         }
                         break;
                     case ConsoleKey.DownArrow:
-                        aktiveZeile++;
-                        aktiveZeile %= zeilen.Length;
+                        activeRow++;
+                        activeRow %= lines.Length;
                         break;
 
                     case ConsoleKey.Enter:
-                        switch (aktiveZeile)
+                        switch (activeRow)
                         {
                             case 0:
                                 Console.Clear();
-                                SpielErklärung();
+                                GameInstruction();
                                 break;
-
-
+                            case 1:
+                                HighScoreList();
+                                break;
                             case 2:
 
+                                Console.BackgroundColor = ConsoleColor.Black;                                
+                                Console.Clear();
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                KreuzAusgabe("███╗░░██╗░█████╗░███╗░░░███╗███████╗", 0, 0);
+                                KreuzAusgabe("████╗░██║██╔══██╗████╗░████║██╔════╝", 0, 1);
+                                KreuzAusgabe("██╔██╗██║███████║██╔████╔██║█████╗░░", 0, 2);
+                                KreuzAusgabe("██║╚████║██╔══██║██║╚██╔╝██║██╔══╝░░", 0, 3);
+                                KreuzAusgabe("██║░╚███║██║░░██║██║░╚═╝░██║███████╗", 0, 4);
+                                KreuzAusgabe("╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝", 0, 5);
+                                Console.WriteLine();
+
+                                
+
+
+
+
+
+                                Console.SetCursorPosition(15, 10);
+                                Console.Write("Wie heißt du? : ");
+                                playerName = Console.ReadLine();
                                 Start();
                                 break;
-
-
                         }
                         break;
 
-
+                    case ConsoleKey.Escape:
+                        Console.Clear();
+                        Environment.Exit(0);
+                        break;
 
                 }
-
-
-
             }
 
-        }
 
-        private static void SpielErklärung()
+        }
+              
+
+        private static void GameInstruction()
         {
 
             Console.Clear();
-            Console.WriteLine("Hallo, ich bin Sammy!");
-            Console.WriteLine("Ich arbeite als Stapelfahrer am Hafen ");
+            Console.WriteLine("Hallo, ich bin Kelly!  🧍‍♀️");
+            Console.WriteLine("Ich arbeite in einem Lagerhaus");
             Console.WriteLine("Leider gab es einen Fehler bei der Platzierung von einigen Boxen");
-            Console.WriteLine("Ich habe jetzt die Aufgabe bekommen die Boxen auf dem richtigen Platz zu bringen, damit es zu keiner Verwirrung kommt");
-            Console.WriteLine("Ich brauche dafür deine Hilfe! Ich weiß nämlich nicht genau wo sich die Container befinden");
-            Console.WriteLine("Mithilfe der Karte vom Hafen wirst du mir helfen sie auf ihren Platz zu fahren und zu platzieren");
-            Console.WriteLine("Um mir zu sagen, dass ich nach oben gehen soll drücke die Pfeiltaste nach oben");
+            Console.WriteLine("Deswegen habe ich die Aufgabe bekommen, die Boxen auf dem richtigen Platz zu bringen");
+            Console.WriteLine("Ich brauche dafür deine Hilfe! Ich weiß nämlich nicht genau wo die Kisten hinmüssen");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("Mit den Pfeiltasten kannst du mir die Richtung vorgeben");
+            Console.WriteLine("Die linke Pfeiltaste bewegt mich nach links, die rechte Pfeiltaste nach rechts, die Pfeiltaste nach oben nach oben und die Pfeiltaste nach unten bewegt mich nach unten");
+            Console.WriteLine("Überlege gut wo du die Kisten hinbewegst, denn du kannst sie nur schieben");
+            Console.WriteLine("So sehen die Boxen aus: 📦");
+            Console.WriteLine("Und so sehen die Ziele aus: ❌");
+            Console.WriteLine();
+            Console.WriteLine("Zurück mit der Enter Taste");
             Console.ReadLine();
-        }
-
-        static int KoordinateVonMaxl(out int yKoorMaxl)
-        {
-            string gesucht = "Maxl";
-            int xKoorMaxl = -1;
-            yKoorMaxl = -1;
-
-            for (int i = 0; i < spielBrett.GetLength(0); i++)
-            {
-                for (int j = 0; j < spielBrett.GetLength(1); j++)
-                {
-                    if (spielBrett[i, j] == gesucht)
-                    {
-                        yKoorMaxl = i;
-                        xKoorMaxl = j;
-                        return xKoorMaxl;
-                    }
-
-
-                }
-
-            }
-
-            return xKoorMaxl;
-        }
-
-
-        private static void Brett()
-        {
-            int counter = 7;
-
-            for (int i = 0; i < 15; i++)
-            {
-                Console.SetCursorPosition(39, counter);
-                spielBrett[0, i] = "Wand";
-                Console.WriteLine('#');
-                counter++;
-            }
-
-            for (int i = 0; i < 15; i++)
-            {
-                Console.SetCursorPosition(39, counter);
-                spielBrett[i, 0] = "Wand";
-                Console.WriteLine('#');
-                counter++;
-            }
-
-
-            Console.SetCursorPosition(Console.WindowWidth / 2 - 1, Console.WindowHeight / 2 - 1);
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            spielBrett[Console.WindowWidth / 2 - 1, Console.WindowHeight / 2 - 1] = "Maxl";
-
-            Console.Write("L");
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            for (int i = 0; i < 15; i++)
-            {
-                Console.SetCursorPosition(counter, 40);
-                spielBrett[0, i] = "Wand";
-                Console.WriteLine('#');
-                counter++;
-            }
-
-
-        }
-
-
-
-
-        private static void Start()
-        {
-            string level = "nothing";
-            int aktiveZeile = 0;
-            string[] zeilen = { "Level 1", "Level 2", "Level 3" };
             Console.Clear();
-            Console.SetCursorPosition(10, 0);
+            ShowMenu();
+
+        }
+
+        static void HighScoreList()
+        {
+
+            int activeRow = 0;
+            string level = "nothing";
+            Console.Clear();
+            string[] lines = { "Level1", "Level2", "Level3" };
 
 
+            Console.ForegroundColor = ConsoleColor.Green;
+            KreuzAusgabe("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
+            KreuzAusgabe("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
+            KreuzAusgabe("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
+            KreuzAusgabe("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);
+            KreuzAusgabe("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);
+            KreuzAusgabe("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
+            Console.WriteLine();
+
+            Console.WriteLine();
+            Console.SetCursorPosition(5, 13);
+            Console.WriteLine("Drücke Escape um zum Startmenü zu kommen");
+
+            ConsoleKey key = ConsoleKey.NoName;
 
             while (key != ConsoleKey.E)
             {
-                for (int i = 0; i < zeilen.Length; i++)
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    if (i == aktiveZeile)
-                    {
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-                    Console.SetCursorPosition(10, 4 + i);
-                    Console.WriteLine(zeilen[i]);
+                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.DarkRed : ConsoleColor.Black;
+                    Console.SetCursorPosition(10, 7 + i);
+                    Console.WriteLine(lines[i]);
                 }
+
+                Console.BackgroundColor = ConsoleColor.Black;
+
                 key = Console.ReadKey(true).Key;
 
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
-                        aktiveZeile--;
-                        if (aktiveZeile < 0)
-                        {
-                            aktiveZeile += zeilen.Length;
-                        }
+                        activeRow = (activeRow - 1 + lines.Length) % lines.Length;
                         break;
+
                     case ConsoleKey.DownArrow:
-                        aktiveZeile++;
-                        aktiveZeile %= zeilen.Length;
+                        activeRow = (activeRow + 1) % lines.Length;
                         break;
 
                     case ConsoleKey.Enter:
-                        switch (aktiveZeile)
-                        {
-                            case 0:
-                                level = "Level1";
-                                break;
-
-                            case 1:
-                                level = "Level2";
-                                break;
-
-                            case 2:
-                                level = "Level3";
-                                break;
-
-
-                        }
+                        level = "score_"+ lines[activeRow] + ".txt";
+                        ShowLevelHigscore(level);
+                        Console.Clear();
                         break;
-
-
-
+                    case ConsoleKey.Escape:
+                        ShowMenu();
+                        break;
                 }
 
+                if (key == ConsoleKey.Enter)
+                    break;
+            }
+        }
+
+        static void ShowLevelHigscore(string level)
+        {
+            Console.Clear();
+            string line;
+
+            Console.WriteLine("Aktueller Punktestand:");
+            Console.WriteLine();
+
+            var sr = new StreamReader(level);
+            for (int i = 0; !sr.EndOfStream; i++)
+            {
+                line = sr.ReadLine();
+                Console.WriteLine(line);
+            }
+            sr.Close();
+
+            Console.WriteLine("Um zurück zum Startmenü zu kommen, drücken Sie die Enter-Taste");
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.ReadLine();
+
+            HighScoreList();
+        }
+
+      
+        private static void Start()
+        {
+            Console.Clear();
+
+            string level = "nothing";
+            int activeRow = 0;
+            string[] lines = { "Level1", "Level2", "Level3" };
+            footSteps = 0;
 
 
+            Console.Clear();
+
+            for (int i = 0; i < (gameBoard.GetLength(0)-1); i++)
+            { 
+                for (int j = 0; j < (gameBoard.GetLength(1)-1); j++)
+                {
+                    gameBoard[i, j] = null;
+                    goalList[i, j] = false;
+                }
             }
 
-            int maxWidth = 0;
-            int maxLength = 0;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
+
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            KreuzAusgabe("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
+            KreuzAusgabe("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
+            KreuzAusgabe("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
+            KreuzAusgabe("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);
+            KreuzAusgabe("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);
+            KreuzAusgabe("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.SetCursorPosition(10, 8);
+            Console.WriteLine("Hallo " + playerName);
+            Console.WriteLine();
+
+            ConsoleKey key = ConsoleKey.NoName;
+
+            while (key != ConsoleKey.E)
+            {
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.DarkRed : ConsoleColor.Black;
+                    Console.SetCursorPosition(10, 10 + i);
+                    Console.WriteLine(lines[i]);
+                }
+
+                Console.BackgroundColor = ConsoleColor.Black;
+
+                key = Console.ReadKey(true).Key;
+
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                        activeRow = (activeRow - 1 + lines.Length) % lines.Length;
+                        break;
+
+                    case ConsoleKey.DownArrow:
+                        activeRow = (activeRow + 1) % lines.Length;
+                        break;
+
+                    case ConsoleKey.Enter:
+                        level = lines[activeRow] + ".txt";
+                        Console.Clear();
+                        break;
+                    case ConsoleKey.Escape:
+                        ShowMenu();
+                        break;
+                }
+
+                if (key == ConsoleKey.Enter)
+                    break;
+            }
+            sw = new StreamWriter("score_" + level, append: true);
+            BoardInitialize(level);
+
+            DrawBoard();
+
+        }
+
+        static void BoardInitialize(string level)
+        {
             var sr = new StreamReader(level);
-            char[,] zeichen = new char[40,40];
+            countGoals = 0;
+            Console.Clear();
+
             string zeile;
 
             for (int i = 0; !sr.EndOfStream; i++)
             {
                 zeile = sr.ReadLine();
-                
-                for(int j = 0; j < zeile.Length; j++)
+
+                for (int j = 0; j < zeile.Length; j++)
                 {
-                    zeichen[j, i] = zeile[j];
+
+                    switch (zeile[j])
+                    {
+                        case '#':
+                            gameBoard[j, i] = "Wand";
+                            break;
+                        case 'x':
+                            gameBoard[j, i] = "Ziel";
+                            goalList[j, i] = true;
+                            countGoals++;
+                            break;
+                        case 'O':
+                            gameBoard[j, i] = "Box";
+                            break;
+                        case '§':
+                            gameBoard[j, i] = "Maxl";
+                            xKoorMaxl = j;
+                            yKoorMaxl = i;
+                            break;
+                        case ' ':
+                            gameBoard[j, i] = "Leer";
+                            break;
+                        
+                    }
+
                 }
-
-                Console.WriteLine(zeile);
-            }
-
-
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Clear();
-
-
-
-
-
-
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            Brett();
-
-
-            int xKoorMaxl = KoordinateVonMaxl(out int yKoorMaxl);
-
-            while (true)
-            {
-
-                key = Console.ReadKey(true).Key;
-
-                switch (key)
-                {
-                    case ConsoleKey.UpArrow:
-                        if (spielBrett[xKoorMaxl, yKoorMaxl - 1] == "Leer")
-                        {
-                            spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
-                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                        }
-                        else if (spielBrett[xKoorMaxl, yKoorMaxl - 1] == "Box")
-                        {
-                            if (spielBrett[xKoorMaxl, yKoorMaxl - 2] == "Leer")
-                            {
-                                spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
-                                spielBrett[xKoorMaxl, yKoorMaxl - 2] = "Box";
-                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                            }
-                            else if (spielBrett[xKoorMaxl, yKoorMaxl - 2] == "Ziel")
-                            {
-                                spielBrett[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
-                                spielBrett[xKoorMaxl, yKoorMaxl - 2] = "BoxImZiel";
-                            }
-                        }
-                        break;
-
-                    case ConsoleKey.DownArrow:
-                        if (spielBrett[xKoorMaxl, yKoorMaxl + 1] == "Leer")
-                        {
-                            spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
-                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                        }
-                        else if (spielBrett[xKoorMaxl, yKoorMaxl + 1] == "Box")
-                        {
-                            if (spielBrett[xKoorMaxl, yKoorMaxl + 2] == "Leer")
-                            {
-                                spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
-                                spielBrett[xKoorMaxl, yKoorMaxl + 2] = "Box";
-                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                            }
-                            else if (spielBrett[xKoorMaxl, yKoorMaxl + 2] == "Ziel")
-                            {
-                                spielBrett[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
-                                spielBrett[xKoorMaxl, yKoorMaxl + 2] = "BoxImZiel";
-                            }
-                        }
-                        break;
-
-                    case ConsoleKey.LeftArrow:
-                        if (spielBrett[xKoorMaxl - 1, yKoorMaxl] == "Leer")
-                        {
-                            spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
-                            spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                        }
-                        else if (spielBrett[xKoorMaxl - 1, yKoorMaxl] == "Box")
-                        {
-                            if (spielBrett[xKoorMaxl - 2, yKoorMaxl] == "Leer")
-                            {
-                                spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
-                                spielBrett[xKoorMaxl - 2, yKoorMaxl] = "Box";
-                                spielBrett[xKoorMaxl, yKoorMaxl] = "Leer";
-
-                            }
-                            else if (spielBrett[xKoorMaxl - 2, yKoorMaxl] == "Ziel")
-                            {
-                                spielBrett[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
-                                spielBrett[xKoorMaxl - 2, yKoorMaxl] = "BoxImZiel";
-                            }
-                        }
-                        break;
-                }
-
             }
         }
+
+        static void DrawBoard()
+        {
+            int countCurrentGoals = 0;
+            Console.SetCursorPosition(0, 0);
+ 
+            for (int x = 0; x < 30; x++)
+            {
+                if (gameBoard[x, 0] == null)
+                { break; }
+                for (int y = 0; y < 30; y++)
+                {
+                    string tile = gameBoard[y, x];
+
+                    switch (tile)
+                    {
+                        case "Wand":
+                            Console.Write("🧱");
+                            break;
+                        case "Box":
+                            Console.Write("📦");
+                            if (goalList[y, x] == true)
+                            {
+                                countCurrentGoals++;
+                            }
+                            break;
+                        case "Ziel":
+                            Console.Write("❌");
+                            break;
+                        case "Maxl":
+                            Console.Write("🧍‍♀️");
+                            break;
+                        case "Leer":
+                            if (goalList[y, x] == true)
+                            {
+                                Console.Write("❌");
+                            }
+                            else
+                            {
+                                Console.Write("  ");
+                            }
+                            break;
+                    }
+                }
+                Console.WriteLine();
+
+            }
+
+            if (countCurrentGoals == countGoals)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine(playerName +" du hast gewonnen!!!");
+              
+                sw.WriteLine(playerName + ": " + footSteps);
+                sw.Flush();
+                sw.Close();
+
+            }
+            else
+            {
+                
+                Console.WriteLine("Bisher " + countCurrentGoals + " Boxen im Ziel");
+                Console.WriteLine("Schritte bisher: " + footSteps);
+
+                Console.WriteLine();
+            }
+
+           Console.WriteLine("Drücke Escape um zur Levelauswahl zu gelangen");
+
+            Movement();
+        }
+
+ 
+        static void Movement()
+        {
+            while (true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+
+
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            if (gameBoard[xKoorMaxl, yKoorMaxl - 1] == "Leer" || gameBoard[xKoorMaxl, yKoorMaxl - 1] == "Ziel")
+                            {
+                                gameBoard[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
+                                gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+
+                                yKoorMaxl--;
+                                footSteps++;
+
+                            }
+                            else if (gameBoard[xKoorMaxl, yKoorMaxl - 1] == "Box")
+                            {
+                                if (gameBoard[xKoorMaxl, yKoorMaxl - 2] == "Leer" || gameBoard[xKoorMaxl, yKoorMaxl - 2] == "Ziel")
+                                {
+                                    gameBoard[xKoorMaxl, yKoorMaxl - 1] = "Maxl";
+                                    gameBoard[xKoorMaxl, yKoorMaxl - 2] = "Box";
+                                    gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+
+                                    yKoorMaxl--;
+                                    footSteps++;
+                                }
+                            }
+                            DrawBoard();
+
+                            break;
+
+                        case ConsoleKey.DownArrow:
+                            if (gameBoard[xKoorMaxl, yKoorMaxl + 1] == "Leer" || gameBoard[xKoorMaxl, yKoorMaxl + 1] == "Ziel")
+                            {
+                                gameBoard[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
+                                gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                yKoorMaxl++;
+                                footSteps++;
+                            }
+                            else if (gameBoard[xKoorMaxl, yKoorMaxl + 1] == "Box")
+                            {
+                                if (gameBoard[xKoorMaxl, yKoorMaxl + 2] == "Leer" || gameBoard[xKoorMaxl, yKoorMaxl + 2] == "Ziel")
+                                {
+                                    gameBoard[xKoorMaxl, yKoorMaxl + 1] = "Maxl";
+                                    gameBoard[xKoorMaxl, yKoorMaxl + 2] = "Box";
+                                    gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                    yKoorMaxl++;
+                                    footSteps++;
+                                }
+                            }
+                            DrawBoard();
+                            break;
+
+                        case ConsoleKey.LeftArrow:
+                            if (gameBoard[xKoorMaxl - 1, yKoorMaxl] == "Leer" || gameBoard[xKoorMaxl - 1, yKoorMaxl] == "Ziel")
+                            {
+                                gameBoard[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
+                                gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                xKoorMaxl--;
+                                footSteps++;
+                            }
+                            else if (gameBoard[xKoorMaxl - 1, yKoorMaxl] == "Box")
+                            {
+                                if (gameBoard[xKoorMaxl - 2, yKoorMaxl] == "Leer" || gameBoard[xKoorMaxl - 2, yKoorMaxl] == "Ziel")
+                                {
+                                    gameBoard[xKoorMaxl - 1, yKoorMaxl] = "Maxl";
+                                    gameBoard[xKoorMaxl - 2, yKoorMaxl] = "Box";
+                                    gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                    xKoorMaxl--;
+                                    footSteps++;
+                                }
+
+                            }
+                           
+                            DrawBoard();
+                            break;
+
+                        case ConsoleKey.RightArrow:
+                            if (gameBoard[xKoorMaxl + 1, yKoorMaxl] == "Leer" || gameBoard[xKoorMaxl + 1, yKoorMaxl] == "Ziel")
+                            {
+                                gameBoard[xKoorMaxl + 1, yKoorMaxl] = "Maxl";
+                                gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                xKoorMaxl++;
+                                footSteps++;
+                            }
+                            else if (gameBoard[xKoorMaxl + 1, yKoorMaxl] == "Box")
+                            {
+                                if (gameBoard[xKoorMaxl + 2, yKoorMaxl] == "Leer" || gameBoard[xKoorMaxl + 2, yKoorMaxl] == "Ziel")
+                                {
+                                    gameBoard[xKoorMaxl + 1, yKoorMaxl] = "Maxl";
+                                    gameBoard[xKoorMaxl + 2, yKoorMaxl] = "Box";
+                                    gameBoard[xKoorMaxl, yKoorMaxl] = "Leer";
+                                    xKoorMaxl++;
+                                    footSteps++;
+                                }
+                            }
+                            DrawBoard();
+                            break;
+
+                        case ConsoleKey.Escape:
+                            Start();
+                            break;
+                    }
+                }
+
+                Thread.Sleep(10); 
+            }
+
+        }
+
     }
 }
