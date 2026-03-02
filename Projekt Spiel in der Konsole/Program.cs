@@ -18,7 +18,7 @@ namespace ConsolenSteuerung
 
     internal class Program
     {
-
+        //global variables
         static string[,] gameBoard = new string[30, 30];
         static bool[,] goalList = new bool[30, 30];
         static bool running = true;
@@ -29,14 +29,13 @@ namespace ConsolenSteuerung
         static string playerName = "";
         static int footSteps = 0;
         static StreamWriter sw = null;
+        static int count = 0;
 
-        static void Eingabe()
+        static void Input()
         {
-
-
             while (running)
             {
-                inputkey = Console.ReadKey(true);
+                inputkey = Console.ReadKey(true);               //Activate Key
                 key = inputkey.Key;
             }
 
@@ -47,7 +46,7 @@ namespace ConsolenSteuerung
         static void Main(string[] args)
         {
 
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;     //for emojis
             Console.CursorVisible = false;
 
 
@@ -58,7 +57,7 @@ namespace ConsolenSteuerung
 
             ShowMenu();
 
-            var myThread = new System.Threading.Thread(Eingabe);
+            var myThread = new System.Threading.Thread(Input);
             myThread.Start();
 
 
@@ -67,9 +66,9 @@ namespace ConsolenSteuerung
             Console.Title = "Konsolensteuerung von Julia Kegelreiter";
 
         }
-        static void KreuzAusgabe(string ausgabe, int xKoor, int yKoor)
+        static void PositionHeading(string ausgabe, int xKoor, int yKoor)
         {
-            Console.SetCursorPosition(xKoor, yKoor);
+            Console.SetCursorPosition(xKoor, yKoor);                    //Method for Position of Heading
             Console.WriteLine(ausgabe);
             Thread.Sleep(25);
 
@@ -83,7 +82,7 @@ namespace ConsolenSteuerung
                 for (int x = 0; x < bmp.Width; x++) 
                 { 
                     Color c = bmp.GetPixel(x, y); 
-                    Console.Write($"\x1b[48;2;{c.R};{c.G};{c.B}m "); 
+                    Console.Write($"\x1b[48;2;{c.R};{c.G};{c.B}m ");                    //Picture of startscreen for 5 seconds
                 } 
                 if (y != bmp.Height-1)
                     Console.Write("\x1b[0m\n"); 
@@ -95,14 +94,7 @@ namespace ConsolenSteuerung
             Console.BackgroundColor = ConsoleColor.Black;
             ShowMenu();
             
-              
-           
-          
-               
-            
-
-            
-
+             
             
            
         }
@@ -113,14 +105,14 @@ namespace ConsolenSteuerung
             string[] lines = { "Anleitung", "Bestenliste", "Start" };
             Console.Clear();
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = ConsoleColor.Green;
 
-            KreuzAusgabe("███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗", 0, 0);
-            KreuzAusgabe("████╗░████║██╔════╝████╗░██║██║░░░██║", 0, 1);
-            KreuzAusgabe("██╔████╔██║█████╗░░██╔██╗██║██║░░░██║", 0, 2);
-            KreuzAusgabe("██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║", 0, 3);
-            KreuzAusgabe("██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝", 0, 4);
-            KreuzAusgabe("╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░", 0, 5);
+            PositionHeading("███╗░░░███╗███████╗███╗░░██╗██╗░░░██╗", 0, 0);
+            PositionHeading("████╗░████║██╔════╝████╗░██║██║░░░██║", 0, 1);
+            PositionHeading("██╔████╔██║█████╗░░██╔██╗██║██║░░░██║", 0, 2);
+            PositionHeading("██║╚██╔╝██║██╔══╝░░██║╚████║██║░░░██║", 0, 3);
+            PositionHeading("██║░╚═╝░██║███████╗██║░╚███║╚██████╔╝", 0, 4);
+            PositionHeading("╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚══╝░╚═════╝░", 0, 5);
 
 
             Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -129,6 +121,7 @@ namespace ConsolenSteuerung
             Console.WriteLine("Menü (Abbruch mit 'Esc')");
             Console.WriteLine("Um sich im Menü nach oben zu bewegen,drücken Sie die Pfeiltaste nach oben");
             Console.WriteLine("Um sich im Menü nach unten zu bewegen,drücken Sie  die Pfeiltaste nach unten");
+            Console.WriteLine("Mit Enter bestätigen");                                                          //Describtion of menu
 
             Console.WriteLine();
             Console.SetCursorPosition(12, 0);
@@ -138,16 +131,16 @@ namespace ConsolenSteuerung
                 {
                     if (i == activeRow)
                     {
-                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.BackgroundColor = ConsoleColor.White;
                     }
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
-                    Console.SetCursorPosition(12, 11 + i);
+                    Console.SetCursorPosition(12, 13 + i);
                     Console.WriteLine(lines[i]);
                 }
-                key = Console.ReadKey(true).Key;
+                key = Console.ReadKey(true).Key;                                            //List of menu
 
                 switch (key)
                 {
@@ -178,22 +171,17 @@ namespace ConsolenSteuerung
                                 Console.BackgroundColor = ConsoleColor.Black;                                
                                 Console.Clear();
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                KreuzAusgabe("███╗░░██╗░█████╗░███╗░░░███╗███████╗", 0, 0);
-                                KreuzAusgabe("████╗░██║██╔══██╗████╗░████║██╔════╝", 0, 1);
-                                KreuzAusgabe("██╔██╗██║███████║██╔████╔██║█████╗░░", 0, 2);
-                                KreuzAusgabe("██║╚████║██╔══██║██║╚██╔╝██║██╔══╝░░", 0, 3);
-                                KreuzAusgabe("██║░╚███║██║░░██║██║░╚═╝░██║███████╗", 0, 4);
-                                KreuzAusgabe("╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝", 0, 5);
+                                PositionHeading("███╗░░██╗░█████╗░███╗░░░███╗███████╗", 0, 0);
+                                PositionHeading("████╗░██║██╔══██╗████╗░████║██╔════╝", 0, 1);
+                                PositionHeading("██╔██╗██║███████║██╔████╔██║█████╗░░", 0, 2);
+                                PositionHeading("██║╚████║██╔══██║██║╚██╔╝██║██╔══╝░░", 0, 3);
+                                PositionHeading("██║░╚███║██║░░██║██║░╚═╝░██║███████╗", 0, 4);
+                                PositionHeading("╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝", 0, 5);
                                 Console.WriteLine();
-
-                                
-
-
-
 
 
                                 Console.SetCursorPosition(15, 10);
-                                Console.Write("Wie heißt du? : ");
+                                Console.Write("Wie heißt du? : ");                                                          //write name 
                                 playerName = Console.ReadLine();
                                 Start();
                                 break;
@@ -204,7 +192,6 @@ namespace ConsolenSteuerung
                         Console.Clear();
                         Environment.Exit(0);
                         break;
-
                 }
             }
 
@@ -232,7 +219,7 @@ namespace ConsolenSteuerung
             Console.WriteLine("Zurück mit der Enter Taste");
             Console.ReadLine();
             Console.Clear();
-            ShowMenu();
+            ShowMenu();                                     //Describtion
 
         }
 
@@ -244,14 +231,13 @@ namespace ConsolenSteuerung
             Console.Clear();
             string[] lines = { "Level1", "Level2", "Level3" };
 
-
             Console.ForegroundColor = ConsoleColor.Green;
-            KreuzAusgabe("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
-            KreuzAusgabe("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
-            KreuzAusgabe("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
-            KreuzAusgabe("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);
-            KreuzAusgabe("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);
-            KreuzAusgabe("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
+            PositionHeading("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
+            PositionHeading("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
+            PositionHeading("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
+            PositionHeading("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);
+            PositionHeading("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);                                             //Heading level
+            PositionHeading("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
             Console.WriteLine();
 
             Console.WriteLine();
@@ -264,7 +250,7 @@ namespace ConsolenSteuerung
             {
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.DarkRed : ConsoleColor.Black;
+                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.White : ConsoleColor.Black;
                     Console.SetCursorPosition(10, 7 + i);
                     Console.WriteLine(lines[i]);
                 }
@@ -276,7 +262,7 @@ namespace ConsolenSteuerung
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
-                        activeRow = (activeRow - 1 + lines.Length) % lines.Length;
+                        activeRow = (activeRow - 1 + lines.Length) % lines.Length;                                              //List of Levels
                         break;
 
                     case ConsoleKey.DownArrow:
@@ -309,7 +295,7 @@ namespace ConsolenSteuerung
             var sr = new StreamReader(level);
             for (int i = 0; !sr.EndOfStream; i++)
             {
-                line = sr.ReadLine();
+                line = sr.ReadLine();                                                                           //highscore of tapped level
                 Console.WriteLine(line);
             }
             sr.Close();
@@ -327,8 +313,9 @@ namespace ConsolenSteuerung
         private static void Start()
         {
             Console.Clear();
-
+         
             string level = "nothing";
+            string levelScoreName = null;
             int activeRow = 0;
             string[] lines = { "Level1", "Level2", "Level3" };
             footSteps = 0;
@@ -338,7 +325,7 @@ namespace ConsolenSteuerung
 
             for (int i = 0; i < (gameBoard.GetLength(0)-1); i++)
             { 
-                for (int j = 0; j < (gameBoard.GetLength(1)-1); j++)
+                for (int j = 0; j < (gameBoard.GetLength(1)-1); j++)                                                //Level list
                 {
                     gameBoard[i, j] = null;
                     goalList[i, j] = false;
@@ -350,18 +337,18 @@ namespace ConsolenSteuerung
 
 
             Console.ForegroundColor = ConsoleColor.Green;
-            KreuzAusgabe("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
-            KreuzAusgabe("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
-            KreuzAusgabe("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
-            KreuzAusgabe("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);
-            KreuzAusgabe("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);
-            KreuzAusgabe("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
+            PositionHeading("██╗░░░░░███████╗██╗░░░██╗███████╗██╗", 0, 0);
+            PositionHeading("██║░░░░░██╔════╝██║░░░██║██╔════╝██║░", 0, 1);
+            PositionHeading("██║░░░░░█████╗░░╚██╗░██╔╝█████╗░░██║░", 0, 2);
+            PositionHeading("██║░░░░░██╔══╝░░░╚████╔╝░██╔══╝░░██║░░░░", 0, 3);                      //Heading
+            PositionHeading("███████╗███████╗░░╚██╔╝░░███████╗███████╗", 0, 4);
+            PositionHeading("╚══════╝╚══════╝░░░╚═╝░░░╚══════╝╚══════╝", 0, 5);
 
             Console.WriteLine();
             Console.WriteLine();
 
             Console.SetCursorPosition(10, 8);
-            Console.WriteLine("Hallo " + playerName);
+            Console.WriteLine("Hallo " + playerName);                           //Greeting
             Console.WriteLine();
 
             ConsoleKey key = ConsoleKey.NoName;
@@ -370,7 +357,7 @@ namespace ConsolenSteuerung
             {
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.DarkRed : ConsoleColor.Black;
+                    Console.BackgroundColor = (i == activeRow) ? ConsoleColor.White : ConsoleColor.Black;
                     Console.SetCursorPosition(10, 10 + i);
                     Console.WriteLine(lines[i]);
                 }
@@ -383,7 +370,7 @@ namespace ConsolenSteuerung
                 {
                     case ConsoleKey.UpArrow:
                         activeRow = (activeRow - 1 + lines.Length) % lines.Length;
-                        break;
+                        break;                                                                  //List of Levels
 
                     case ConsoleKey.DownArrow:
                         activeRow = (activeRow + 1) % lines.Length;
@@ -401,11 +388,17 @@ namespace ConsolenSteuerung
                 if (key == ConsoleKey.Enter)
                     break;
             }
-            sw = new StreamWriter("score_" + level, append: true);
+            levelScoreName = "score_" + level;
+            if (sw != null)
+            {
+                sw.Close();
+            }                                                                                   //Write in File score_level...
+            sw = new StreamWriter(levelScoreName, append: true);
+
             BoardInitialize(level);
 
             DrawBoard();
-
+        
         }
 
         static void BoardInitialize(string level)
@@ -434,7 +427,7 @@ namespace ConsolenSteuerung
                             countGoals++;
                             break;
                         case 'O':
-                            gameBoard[j, i] = "Box";
+                            gameBoard[j, i] = "Box";                        //Initialize what what is
                             break;
                         case '§':
                             gameBoard[j, i] = "Maxl";
@@ -449,6 +442,7 @@ namespace ConsolenSteuerung
 
                 }
             }
+            sr.Close();
         }
 
         static void DrawBoard()
@@ -473,7 +467,7 @@ namespace ConsolenSteuerung
                             Console.Write("📦");
                             if (goalList[y, x] == true)
                             {
-                                countCurrentGoals++;
+                                countCurrentGoals++;                            //every Time a key is tapped new Board
                             }
                             break;
                         case "Ziel":
@@ -500,8 +494,9 @@ namespace ConsolenSteuerung
 
             if (countCurrentGoals == countGoals)
             {
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine(playerName +" du hast gewonnen!!!");
+                Console.WriteLine(playerName +" du hast gewonnen!!!");                  //winning
               
                 sw.WriteLine(playerName + ": " + footSteps);
                 sw.Flush();
@@ -512,7 +507,7 @@ namespace ConsolenSteuerung
             {
                 
                 Console.WriteLine("Bisher " + countCurrentGoals + " Boxen im Ziel");
-                Console.WriteLine("Schritte bisher: " + footSteps);
+                Console.WriteLine("Schritte bisher: " + footSteps);                                         //how much Boxes are in goal, how much footsteps are made
 
                 Console.WriteLine();
             }
@@ -525,6 +520,7 @@ namespace ConsolenSteuerung
  
         static void Movement()
         {
+            //Conditions
             while (true)
             {
                 if (Console.KeyAvailable)
